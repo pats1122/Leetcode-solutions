@@ -1,29 +1,33 @@
 class Solution {
 public:
-    bool isInterleave(string s1, string s2, string s3) {
-       vector<vector<bool>> dp(s1.size()+1, vector<bool>(s2.size()+1, false));
-        if(s3.size() != s1.size()+s2.size()) return false;
-        if(s1.size()==0 && s2.size()==0 && s3.size()==0) return true;
+    int func(string &s1, string &s2, string & s3, int i, int j, vector<vector<int>> &dp){
+        //base case
+        if(i==s1.size() && j==s2.size()) return 1;
         
-        for(int i=0; i<dp.size(); i++){
-            for(int j=0; j<dp[0].size(); j++){
-                if(i==0 && j==0){
-                    dp[i][j] = true;
-                }
-                else if(i==0 ){
-                    dp[i][j] = s2[j-1]==s3[i+j-1] ? dp[i][j-1] : false;
-                }
-                else if(j==0 ){
-                    dp[i][j] = s1[i-1]==s3[i+j-1]?dp[i-1][j] : false;
-                }
-                else{
-                    if(s1[i-1]==s3[i+j-1])
-                        dp[i][j] = dp[i-1][j];
-                    if(!dp[i][j] && s2[j-1]==s3[i+j-1])
-                        dp[i][j] = dp[i][j-1];
-                }
-            }
+        //look-up
+        if(dp[i][j] != -1) return dp[i][j];
+        
+        //recursive
+        if(i<s1.size() && s1[i]==s3[i+j]){
+            bool t = func(s1,s2,s3,i+1,j,dp);
+            dp[i][j] = t;
+            if(t)
+                return true;
         }
-        return dp[dp.size()-1][dp[0].size()-1];
+        if(j<s2.size() && s2[j]==s3[i+j]){
+            bool t = func(s1,s2,s3,i,j+1,dp);
+            dp[i][j] = t;
+            if(t)
+                return true;
+        }
+        
+        dp[i][j] = false;
+        return false;
+    }
+    bool isInterleave(string s1, string s2, string s3) {
+        if(s1.size() + s2.size() != s3.size()) return false;
+        
+        vector<vector<int>> dp(s1.size()+1, vector<int>(s2.size()+1, -1));
+        return func(s1, s2, s3, 0, 0, dp);
     }
 };
