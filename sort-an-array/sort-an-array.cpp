@@ -1,30 +1,34 @@
 class Solution {
 public:
+    void heapify(vector<int> &nums, int n, int i){
+        int largest = i;
+        int left = 2*i+1;
+        int right = 2*i+2;
+        
+        if(left<n && nums[left]>nums[largest])
+            largest = left;
+        if(right<n && nums[right]>nums[largest])
+            largest = right;
+        
+        if(largest != i){
+            swap(nums[i], nums[largest]);
+            heapify(nums,n,largest);
+        }
+            
+    }
     vector<int> sortArray(vector<int>& nums) {
-        //counting sort
-        //find max and min element 
-        int min = *min_element(nums.begin(), nums.end());
-        int max = *max_element(nums.begin(), nums.end());
+       //heap sort
         
-        //declare freq array to keep frequency of each element
-        vector<int> freq(max-min+1, 0);
+        //build heap from array
+        int n = nums.size();
+        for(int i=n/2; i>=0; i--)
+            heapify(nums, n, i);
         
-        //store frequency of each element in range
-        for(int i=0; i<nums.size(); i++){
-            freq[nums[i]-min]++;
+        //swap max element with last element, call heapify for rest array
+        for(int i=n-1; i>=0; i--){
+            swap(nums[i],nums[0]);
+            heapify(nums, i, 0);
         }
-        
-        //calculate prefix sum
-        for(int i=1; i<freq.size(); i++)
-            freq[i] += freq[i-1];
-        
-        //start putting elements at right pos from end
-        vector<int> ans(nums.size());
-        for(int i=nums.size()-1; i>=0; i--){
-            int idx = freq[nums[i]-min] - 1 ;
-            ans[idx] = nums[i];
-            freq[nums[i]-min]--;
-        }
-        return ans;
+        return nums;
     }
 };
